@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+</head>
+<body>
+
+    <a href="../cart/index.html" type="button" class="btn btn-primary pull-right">Giỏ hàng</a>
+    <div class="container" id="list-product">
+        <!-- item projduct -->
+    </div>
+</body>
+
+<script>
+    //    localStorage.clear();
+    window.addEventListener("load", (event) => {
+
+        // Khởi tạo data
+        let products = [
+            {
+                id: 1,
+                name: 'San pham A',
+                price: 1000,
+                image: '',
+                isHot: true,
+                description: '',
+                rating: 2,
+                color: 'red',
+                quantityInStock: 100
+            },
+            {
+                id: 2,
+                name: 'San pham B',
+                price: 1000,
+                image: '',
+                isHot: true,
+                description: '',
+                rating: 2,
+                color: 'red',
+                quantityInStock: 100
+            },
+            {
+                id: 3,
+                name: 'San pham C',
+                price: 200,
+                image: '',
+                isHot: true,
+                description: '',
+                rating: 2,
+                color: 'red',
+                quantityInStock: 5
+            },
+            {
+                id: 4,
+                name: 'San pham D',
+                price: 100,
+                image: '',
+                isHot: true,
+                description: '',
+                rating: 2,
+                color: 'red',
+                quantityInStock: 100
+            }
+        ];
+        // set data products tạm vào trong   localStorage
+        localStorage.setItem('products', JSON.stringify(products))
+
+        for (let item of products) {
+            // tạo html tương ứng cho từng sản phẩm
+            let htmlProduct = `<div class="col-xs-12 col-md-6 bootstrap snippets bootdeys">
+                        <div class="product-content product-wrap clearfix">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-12 col-xs-12">
+                                    <div class="product-image">
+                                        <img src="https://salt.tikicdn.com/cache/750x750/ts/product/6e/5c/f7/2acb72117f9f6d68125c5c2f1b83139c.jpg.webp"
+                                            alt="194x228" class="img-responsive">
+                                        <span class="tag2 hot">
+                                            HOT
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-7 col-sm-12 col-xs-12">
+                                    <div class="product-deatil">
+                                        <h5 class="name">
+                                            <a href="#">
+                                                `+ item.name + ` <span>Samsung</span>
+                                            </a>
+                                        </h5>
+                                        <p class="price-container">
+                                            <span>$`+ item.price + `</span>
+                                        </p>
+                                        <span class="tag1"></span>
+                                    </div>
+                                    <div class="description">
+                                        <p>Hàng Chính Hãng - Đã kích hoạt bảo hành điện tử </p>
+                                    </div>
+                                    <div class="product-info smart-form">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                                <a href="javascript:void(0);"  data-id="`+ item.id + `" class="btn btn-success btn-purchase">Mua Hàng</a>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                                <div class="rating">
+                                                    <label for="stars-rating-5"><i class="fa fa-star"></i></label>
+                                                    <label for="stars-rating-4"><i class="fa fa-star"></i></label>
+                                                    <label for="stars-rating-3"><i class="fa fa-star text-primary"></i></label>
+                                                    <label for="stars-rating-2"><i class="fa fa-star text-primary"></i></label>
+                                                    <label for="stars-rating-1"><i class="fa fa-star text-primary"></i></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            document.querySelector('#list-product').innerHTML += htmlProduct
+        }
+
+        // Event thêm Sản Phẩm Vào Giỏ Hàng 
+        document.querySelectorAll('.btn-purchase').forEach(button => {
+            button.onclick = function (e) {
+                // get value id tương ứng sản phẩm chọn mua
+                const productId = e.target?.getAttribute("data-id")
+                let product = products.find(function (item) {
+                    return Number(item?.id) === Number(productId);
+                });
+                if (product) {
+                    // get data giỏ hàng trong localStorage
+                    let listCart = localStorage.getItem('listCart')
+                    if (!listCart) {
+                        listCart = new Array();
+                    } else {
+                        listCart = JSON.parse(listCart)
+                    }
+                    // get sản phẩm đã có trong giỏ hàng
+                    let cartStorage = listCart.find(function (item) {
+                        return Number(item?.productId) === Number(productId);
+                    });
+
+                    let cart = {
+                        productId: productId,
+                        productName: product.name,
+                        productPrice: product.price,
+                        quantity: 1,
+                        purchaseTime: new Date(),
+                    }
+                    if (cartStorage != null) {
+                        if (cartStorage.quantity >= product.quantityInStock) {
+                            alert('Số lượng không đủ! ')
+                            return;
+                        }
+                        cartStorage.quantity++;  // Thay đổi số lượng, sản phẩm đã có trong giỏ hàng
+                    } else {
+                        listCart.push(cart);
+                    }
+                    localStorage.setItem('listCart', JSON.stringify(listCart)) // lưu data vào localStorage
+                }
+            }
+        });
+    });
+</script>
+
+</html>
